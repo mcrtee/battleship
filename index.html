@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>⚓ Морской бой</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <header class="title-block">
+    <h1>⚓ Морской бой</h1>
+    <div class="wave-divider" aria-hidden="true"></div>
+  </header>
+
+  <p id="status">
+    Стреляйте по полю противника — кликните по клетке справа
+  </p>
+
+  <div class="boards">
+
+    <div class="board-block">
+      <h2>🏴 Ваш флот</h2>
+      <div class="grid" id="playerGrid"></div>
+    </div>
+
+    <div class="board-block">
+      <h2>🌊 Поле противника</h2>
+      <div class="grid enemy" id="enemyGrid"></div>
+    </div>
+
+  </div>
+
+  <div class="controls">
+
+    <button class="action primary" id="newGameBtn">
+      ⚓ Новая игра
+    </button>
+
+    <button class="action" id="soundBtn">
+      🔊 Звук: вкл
+    </button>
+
+  </div>
+
+  <p class="legend">
+    Силуэты кораблей — ваш флот
+    (враг видит их, только когда топит).
+    Огонь 🔥 — попадание, рябь — промах.
+  </p>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
