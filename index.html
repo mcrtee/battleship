@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>⚓ Морской бой</title>
-
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>⚓ Морской бой</title>
+<link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
 <div class="wrap">
 
   <header class="title-block">
@@ -17,45 +14,67 @@
     <div class="wave-divider" aria-hidden="true"></div>
   </header>
 
-  <p id="status">
-    Стреляйте по полю противника — кликните по клетке справа
-  </p>
+  <p id="status">Выберите режим игры</p>
 
-  <div class="boards">
+  <!-- ===== Экран 1: выбор режима ===== -->
+  <section id="menuScreen" class="screen menu-card">
+    <h2>Выберите режим</h2>
+    <button class="action primary big" id="modePcBtn">🤖 Против компьютера</button>
+    <button class="action big" id="modePvpBtn">👥 Игра на двоих (с другом)</button>
+    <p class="legend">Режим на двоих — по очереди на одном устройстве. При передаче хода экран закрывается, чтобы соперник не видел ваши корабли.</p>
+  </section>
 
+  <!-- ===== Экран 2: расстановка кораблей ===== -->
+  <section id="placementScreen" class="screen" hidden>
     <div class="board-block">
-      <h2>🏴 Ваш флот</h2>
-      <div class="grid" id="playerGrid"></div>
+      <h2 id="placementTitle">Расставьте корабли</h2>
+      <div class="grid placing" id="placementGrid"></div>
     </div>
 
-    <div class="board-block">
-      <h2>🌊 Поле противника</h2>
-      <div class="grid enemy" id="enemyGrid"></div>
+    <div class="tray" id="tray"></div>
+
+    <div class="controls">
+      <button class="action" id="rotateBtn">🔄 Повернуть (R)</button>
+      <button class="action" id="randomBtn">🎲 Случайно</button>
+      <button class="action" id="clearBtn">🧹 Очистить</button>
+      <button class="action primary" id="readyBtn" disabled>✅ Готово</button>
     </div>
 
-  </div>
+    <p class="legend">Кликните по полю, чтобы поставить корабль. Клик по уже стоящему кораблю — убрать его. Повернуть: кнопка, клавиша R или правая кнопка мыши. Корабли не должны касаться друг друга.</p>
+  </section>
+
+  <!-- ===== Экран 3: бой ===== -->
+  <section id="battleScreen" class="screen" hidden>
+    <div class="boards">
+      <div class="board-block">
+        <h2 id="ownTitle">🏴 Ваш флот</h2>
+        <div class="grid" id="playerGrid"></div>
+      </div>
+      <div class="board-block">
+        <h2 id="foeTitle">🌊 Поле противника</h2>
+        <div class="grid enemy" id="enemyGrid"></div>
+      </div>
+    </div>
+    <p class="legend">Силуэты кораблей — ваш флот (у врага они видны, только когда потоплены). Огонь 🔥 — попадание, рябь — промах. Попали — стреляете ещё раз.</p>
+  </section>
 
   <div class="controls">
-
-    <button class="action primary" id="newGameBtn">
-      ⚓ Новая игра
-    </button>
-
-    <button class="action" id="soundBtn">
-      🔊 Звук: вкл
-    </button>
-
+    <button class="action" id="newGameBtn">⚓ Новая игра</button>
+    <button class="action" id="soundBtn">🔊 Звук: вкл</button>
   </div>
-
-  <p class="legend">
-    Силуэты кораблей — ваш флот
-    (враг видит их, только когда топит).
-    Огонь 🔥 — попадание, рябь — промах.
-  </p>
 
 </div>
 
-<script src="script.js"></script>
+<!-- ===== Экран передачи хода: полностью закрывает игровое поле ===== -->
+<div class="overlay" id="handoff" hidden>
+  <div class="overlay-card">
+    <div class="emoji">🔒</div>
+    <h2 id="handoffTitle"></h2>
+    <p id="handoffText"></p>
+    <button class="action primary big" id="handoffBtn">Я готов(а)</button>
+  </div>
+</div>
 
+<script src="script.js"></script>
 </body>
 </html>

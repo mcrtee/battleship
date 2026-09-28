@@ -16,7 +16,6 @@
   --hull-light: #caa06a;
   --hull-mid: #8a6a3f;
   --hull-dark: #5c4326;
-
   --hull-sunk-light: #55606a;
   --hull-sunk-dark: #262b30;
 
@@ -24,8 +23,7 @@
   --miss: #bfe4f5;
 
   --border: #123049;
-
-  --accent: #f4c542;
+  --accent: #f4c542;   /* латунь / брасс */
   --accent-dark: #b98f1d;
   --danger: #ff5a45;
 }
@@ -36,41 +34,22 @@
     --bg-bottom: #071c2e;
   }
 }
-
 :root[data-theme="dark"] {
   --bg-top: #030b12;
   --bg-bottom: #071c2e;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   min-height: 100vh;
-
-  background:
-    radial-gradient(
-      ellipse at top,
-      var(--bg-bottom),
-      var(--bg-top) 75%
-    );
-
+  background: radial-gradient(ellipse at top, var(--bg-bottom), var(--bg-top) 75%);
   color: var(--text);
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
-
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 20px;
 }
 
@@ -80,486 +59,329 @@ body {
   text-align: center;
 }
 
-/* ===== Заголовок ===== */
-
+/* ===== Заголовок с волнистым разделителем ===== */
 .title-block h1 {
   margin: 0;
-
   font-size: 28px;
   letter-spacing: 0.5px;
-
-  text-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
 .wave-divider {
   height: 10px;
-
   margin: 8px auto 18px;
-
   width: 180px;
-
-  background-image:
-    repeating-radial-gradient(
-      circle at 10px -5px,
-      transparent 0,
-      transparent 6px,
-      var(--accent) 7px,
-      transparent 8px
-    );
-
+  background-image: repeating-radial-gradient(circle at 10px -5px, transparent 0, transparent 6px, var(--accent) 7px, transparent 8px);
   background-size: 20px 20px;
   background-repeat: repeat-x;
-
   opacity: 0.8;
 }
 
-/* ===== Статус ===== */
-
 #status {
   margin: 0 0 16px;
-
   color: var(--muted);
-
   min-height: 22px;
-
   font-size: 15px;
 }
 
-/* ===== Поля ===== */
-
 .boards {
   display: flex;
-
   gap: 28px;
-
   justify-content: center;
-
   flex-wrap: wrap;
 }
 
 .board-block h2 {
   font-size: 15px;
-
   color: var(--muted);
-
   margin: 0 0 8px;
-
   font-weight: 600;
 }
 
-/* ===== Контейнер сетки ===== */
-
+/* ===== Контейнер сетки (рамка + фон-гуттер) ===== */
 .grid {
   position: relative;
-
   width: 320px;
-
   aspect-ratio: 1 / 1;
-
-  background:
-    linear-gradient(
-      160deg,
-      var(--border),
-      var(--water-deep)
-    );
-
+  background: linear-gradient(160deg, var(--border), var(--water-deep));
   padding: 3px;
-
   border-radius: 10px;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.04),
-    0 6px 18px rgba(0,0,0,0.35);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 6px 18px rgba(0,0,0,0.35);
 }
 
-/* ===== Слои ===== */
-
+/* ===== Три выровненных слоя внутри сетки: клетки / корпуса кораблей / отметки ===== */
 .layer {
   position: absolute;
-
   inset: 3px;
-
   display: grid;
-
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-
   gap: 3px;
 }
 
-.cells-layer {
-  z-index: 1;
-}
-
-.ship-layer {
-  z-index: 2;
-
-  pointer-events: none;
-}
-
-.marks-layer {
-  z-index: 3;
-
-  pointer-events: none;
-}
+.cells-layer { z-index: 1; }
+.ship-layer  { z-index: 2; pointer-events: none; }
+.marks-layer { z-index: 3; pointer-events: none; }
 
 /* ===== Клетка воды ===== */
-
 .cell {
   position: relative;
-
   background: var(--water);
-
   border-radius: 4px;
-
-  transition:
-    background 0.15s ease;
-
-  background-image:
-    radial-gradient(
-      circle at 30% 30%,
-      rgba(255,255,255,0.04),
-      transparent 60%
-    );
+  transition: background 0.15s ease;
+  /* лёгкая рябь на воде */
+  background-image: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.04), transparent 60%);
 }
 
 .enemy .cells-layer .cell.clickable {
   cursor: pointer;
 }
-
 .enemy .cells-layer .cell.clickable:hover {
   background: var(--water-hover);
 }
 
 /* ============================================================
-   КОРАБЛИ
+   КОРПУСА КОРАБЛЕЙ — единая фигура на всю длину корабля
    ============================================================ */
-
+/* Обёртка — сам элемент сетки (растягивается на всю длину корабля).
+   Отступы корпуса задаются через position:absolute, а не margin:
+   проценты у margin считаются от ШИРИНЫ контейнера даже для верх/низ,
+   поэтому на длинных (3-клеточных) кораблях верт. отступ "съедал"
+   всю высоту клетки. У absolute top/bottom считаются от высоты,
+   left/right — от ширины, и это то, что нужно. */
 .hull-wrap {
   position: relative;
-
   width: 100%;
   height: 100%;
 }
 
 .hull {
   position: absolute;
-
-  background:
-    linear-gradient(
-      160deg,
-      var(--hull-light),
-      var(--hull-mid) 55%,
-      var(--hull-dark)
-    );
-
-  box-shadow:
-    inset 0 -3px 5px rgba(0,0,0,0.35),
-    inset 0 2px 3px rgba(255,255,255,0.15),
-    0 2px 5px rgba(0,0,0,0.4);
+  background: linear-gradient(160deg, var(--hull-light), var(--hull-mid) 55%, var(--hull-dark));
+  box-shadow: inset 0 -3px 5px rgba(0,0,0,0.35), inset 0 2px 3px rgba(255,255,255,0.15), 0 2px 5px rgba(0,0,0,0.4);
 }
-
-/* ===== Горизонтальный корабль ===== */
 
 .hull.horizontal {
-  top: 20%;
-  bottom: 20%;
-
-  left: 2%;
-  right: 2%;
-
-  clip-path:
-    polygon(
-      2% 15%,
-      80% 15%,
-      100% 50%,
-      80% 85%,
-      2% 85%
-    );
+  top: 20%; bottom: 20%;
+  left: 2%; right: 2%;
+  clip-path: polygon(2% 15%, 80% 15%, 100% 50%, 80% 85%, 2% 85%);
 }
-
-/* ===== Вертикальный корабль ===== */
 
 .hull.vertical {
-  left: 20%;
-  right: 20%;
-
-  top: 2%;
-  bottom: 2%;
-
-  clip-path:
-    polygon(
-      15% 2%,
-      85% 2%,
-      85% 80%,
-      50% 100%,
-      15% 80%
-    );
+  left: 20%; right: 20%;
+  top: 2%; bottom: 2%;
+  clip-path: polygon(15% 2%, 85% 2%, 85% 80%, 50% 100%, 15% 80%);
 }
-
-/* ===== Одноклеточный корабль ===== */
 
 .hull.single {
   inset: 16%;
-
-  clip-path:
-    ellipse(
-      45% 45% at 50% 50%
-    );
+  clip-path: ellipse(45% 45% at 50% 50%);
 }
 
-/* ===== Иллюминаторы ===== */
-
+/* иллюминаторы — декоративные точки вдоль корпуса */
 .hull.horizontal::after,
 .hull.vertical::after {
   content: '';
-
   position: absolute;
-
   inset: 0;
-
-  background-image:
-    radial-gradient(
-      circle,
-      rgba(255,255,255,0.35) 1.5px,
-      transparent 1.6px
-    );
+  background-image: radial-gradient(circle, rgba(255,255,255,0.35) 1.5px, transparent 1.6px);
 }
+.hull.horizontal::after { background-size: 22% 100%; background-position: 40% 50%; }
+.hull.vertical::after   { background-size: 100% 22%; background-position: 50% 40%; }
 
-.hull.horizontal::after {
-  background-size: 22% 100%;
-  background-position: 40% 50%;
-}
-
-.hull.vertical::after {
-  background-size: 100% 22%;
-  background-position: 50% 40%;
-}
-
-/* ===== Потопленный корабль ===== */
-
+/* потопленный корабль — тёмный, обгоревший силуэт */
 .hull.sunk {
-  background:
-    linear-gradient(
-      160deg,
-      var(--hull-sunk-light),
-      var(--hull-sunk-dark)
-    );
-
+  background: linear-gradient(160deg, var(--hull-sunk-light), var(--hull-sunk-dark));
   filter: saturate(0.6);
 }
 
 /* ============================================================
-   ОТМЕТКИ ВЫСТРЕЛОВ
+   ОТМЕТКИ ВЫСТРЕЛОВ (попадание / промах)
    ============================================================ */
-
 .mark {
   position: relative;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
 }
 
-/* ===== Промах ===== */
-
 .mark.miss::after {
   content: '';
-
   width: 40%;
   height: 40%;
-
   border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255,255,255,0.85),
-      rgba(191,228,245,0.15) 70%,
-      transparent 75%
-    );
-
-  box-shadow:
-    0 0 0 5px rgba(191,228,245,0.12),
-    0 0 0 9px rgba(191,228,245,0.06);
+  background: radial-gradient(circle, rgba(255,255,255,0.85), rgba(191,228,245,0.15) 70%, transparent 75%);
+  box-shadow: 0 0 0 5px rgba(191,228,245,0.12), 0 0 0 9px rgba(191,228,245,0.06);
 }
-
-/* ===== Попадание ===== */
 
 .mark.hit {
   font-size: 16px;
-
-  filter:
-    drop-shadow(
-      0 0 4px rgba(255,90,50,0.85)
-    );
+  filter: drop-shadow(0 0 4px rgba(255,90,50,0.85));
 }
-
 .mark.hit::after {
   content: '🔥';
 }
 
-/* ============================================================
-   АНИМАЦИЯ ВЗРЫВА
-   ============================================================ */
-
+/* ===== Анимация взрыва (частицы, разлетающиеся из центра) ===== */
 .explosion {
   position: absolute;
-
   inset: 0;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   pointer-events: none;
 }
 
 .explosion .core {
-  width: 10px;
-  height: 10px;
-
-  background:
-    radial-gradient(
-      circle,
-      #fff7ae,
-      #ff9d00 60%,
-      transparent 70%
-    );
-
+  width: 10px; height: 10px;
+  background: radial-gradient(circle, #fff7ae, #ff9d00 60%, transparent 70%);
   border-radius: 50%;
-
-  animation:
-    burst 0.5s ease-out forwards;
+  animation: burst 0.5s ease-out forwards;
 }
 
 @keyframes burst {
-
-  0% {
-    transform: scale(0.3);
-    opacity: 1;
-  }
-
-  60% {
-    transform: scale(2.4);
-    opacity: 0.9;
-  }
-
-  100% {
-    transform: scale(3.2);
-    opacity: 0;
-  }
+  0%   { transform: scale(0.3); opacity: 1; }
+  60%  { transform: scale(2.4); opacity: 0.9; }
+  100% { transform: scale(3.2); opacity: 0; }
 }
 
 .explosion .spark {
   position: absolute;
-
-  width: 4px;
-  height: 4px;
-
+  width: 4px; height: 4px;
   background: var(--accent);
-
   border-radius: 50%;
-
-  animation:
-    fly 0.5s ease-out forwards;
+  animation: fly 0.5s ease-out forwards;
 }
 
 @keyframes fly {
-
-  0% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
-
-  100% {
-    transform:
-      translate(
-        var(--dx),
-        var(--dy)
-      );
-
-    opacity: 0;
-  }
+  0%   { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
 }
 
-/* ============================================================
-   КНОПКИ
-   ============================================================ */
-
+/* ===== Кнопки управления (латунный / брасс стиль) ===== */
 .controls {
   margin-top: 22px;
-
   display: flex;
-
   gap: 10px;
-
   justify-content: center;
 }
 
 button.action {
   padding: 12px 20px;
-
-  border:
-    1px solid var(--border);
-
+  border: 1px solid var(--border);
   border-radius: 12px;
-
   background: var(--card-bg);
-
   color: var(--text);
-
   font-size: 15px;
-
   font-weight: 600;
-
   cursor: pointer;
-
-  transition:
-    background 0.15s ease,
-    transform 0.1s ease;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
-button.action:hover {
-  background: var(--water-hover);
-}
-
-button.action:active {
-  transform: scale(0.97);
-}
+button.action:hover { background: var(--water-hover); }
+button.action:active { transform: scale(0.97); }
 
 button.action.primary {
-  background:
-    linear-gradient(
-      160deg,
-      var(--accent),
-      var(--accent-dark)
-    );
-
+  background: linear-gradient(160deg, var(--accent), var(--accent-dark));
   border-color: var(--accent-dark);
-
   color: #241a02;
 }
 
-/* ===== Описание ===== */
-
 .legend {
   margin-top: 14px;
-
   font-size: 13px;
-
   color: var(--muted);
 }
 
-/* ===== Адаптация ===== */
-
 @media (max-width: 700px) {
-
-  .grid {
-    width: 280px;
-  }
-
+  .grid { width: 280px; }
 }
+
+/* ============================================================
+   ЭКРАНЫ, МЕНЮ, РАССТАНОВКА, ПЕРЕДАЧА ХОДА
+   ============================================================ */
+[hidden] { display: none !important; }
+
+.controls { flex-wrap: wrap; }
+
+button.action:disabled { opacity: 0.45; cursor: not-allowed; }
+button.action.big { padding: 16px 20px; font-size: 16px; }
+
+/* ===== Меню выбора режима ===== */
+.menu-card {
+  max-width: 420px;
+  margin: 0 auto 8px;
+  padding: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+.menu-card h2 { margin: 0 0 4px; font-size: 18px; }
+.menu-card .legend { margin: 4px 0 0; }
+
+/* ===== Расстановка кораблей ===== */
+#placementScreen .board-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.grid.placing .cells-layer .cell.clickable { cursor: pointer; }
+
+.preview-layer { z-index: 4; pointer-events: none; }
+.hull.preview { opacity: 0.8; }
+.hull.preview.valid   { background: linear-gradient(160deg, #7fe3a6, #2f9463 60%, #1f6e47); }
+.hull.preview.invalid { background: linear-gradient(160deg, #ff8a7a, #c0392b 60%, #8e1f14); }
+
+/* ===== Панель кораблей, которые осталось расставить ===== */
+.tray {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.tray-item {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+.tray-item.current {
+  border-color: var(--accent);
+  background: rgba(244, 197, 66, 0.1);
+}
+.tray-item.placed { opacity: 0.25; filter: grayscale(1); }
+.tray-ship {
+  height: 22px;
+  background: linear-gradient(160deg, var(--hull-light), var(--hull-mid) 55%, var(--hull-dark));
+  clip-path: polygon(2% 0, 80% 0, 100% 50%, 80% 100%, 2% 100%);
+}
+.tray-ship.s1 { clip-path: ellipse(45% 45% at 50% 50%); }
+
+/* ===== Экран передачи хода (закрывает поле от второго игрока) ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: radial-gradient(ellipse at top, var(--bg-bottom), var(--bg-top) 75%);
+}
+.overlay-card {
+  max-width: 420px;
+  text-align: center;
+  padding: 28px 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.overlay-card .emoji { font-size: 52px; }
+.overlay-card h2 { margin: 8px 0; }
+.overlay-card p { color: var(--muted); margin: 0 0 18px; line-height: 1.5; }
